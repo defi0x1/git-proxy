@@ -200,10 +200,17 @@ async fn cgi(
 /// A repository operation failed.
 #[derive(Debug, thiserror::Error)]
 pub enum RepoError {
+    /// git could not be started, or the directory could not be created.
     #[error("running git: {0}")]
     Io(#[from] std::io::Error),
+    /// git ran and failed.
     #[error("git {args} failed: {stderr}")]
-    Git { args: String, stderr: String },
+    Git {
+        /// The git arguments.
+        args: String,
+        /// What git printed on stderr.
+        stderr: String,
+    },
 }
 
 /// Runs git in `repo` with a fixed identity and no user config; returns trimmed stdout.

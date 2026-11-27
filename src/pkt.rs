@@ -26,14 +26,19 @@ pub enum Pkt<'a> {
 /// Why a request header or advertisement could not be read.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum ParseError {
+    /// The input ends inside a pkt-line.
     #[error("request ends inside a pkt-line")]
     Truncated,
+    /// A pkt-line length is not four hex digits, or is a reserved value.
     #[error("bad pkt-line length")]
     BadLength,
+    /// A pkt-line payload is over [`MAX_PKT_DATA`] bytes.
     #[error("pkt-line payload over {MAX_PKT_DATA} bytes")]
     TooLong,
+    /// A ref command line is malformed; the text says how.
     #[error("bad ref command: {0}")]
     BadCommand(&'static str),
+    /// A signed push (`push-cert`), which the proxy does not support.
     #[error("signed pushes (push-cert) are not supported")]
     PushCert,
 }
@@ -90,8 +95,11 @@ fn push_pkt(out: &mut Vec<u8>, data: &[u8]) {
 /// One ref update: `<old> <new> <ref>`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Command {
+    /// The ref's current value as the client sees it (hex); all zeros for a create.
     pub old: String,
+    /// The value to set (hex); all zeros for a delete.
     pub new: String,
+    /// The full ref name, for example `refs/heads/main`.
     pub refname: String,
 }
 
@@ -114,9 +122,13 @@ impl Command {
 /// The start of a git-receive-pack request body.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct PushRequest {
+    /// The ref updates, in order.
     pub commands: Vec<Command>,
+    /// Capabilities sent after the first command, for example `report-status`.
     pub caps: Vec<String>,
+    /// `shallow <oid>` lines sent before the commands.
     pub shallow: Vec<String>,
+    /// Push options (`git push -o`), if any were sent.
     pub push_options: Vec<String>,
     /// Offset of the pack (or the end of input) after the commands and push options.
     pub pack_offset: usize,

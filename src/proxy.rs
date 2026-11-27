@@ -93,7 +93,9 @@ pub struct Binding {
     pub upstream: String,
     /// Added to every upstream request. The client's own `Authorization` is dropped.
     pub credential: Credential,
+    /// What the client may push.
     pub policy: Policy,
+    /// Size limits for each push.
     pub limits: Limits,
 }
 
@@ -117,7 +119,9 @@ pub enum Decision {
 /// One push decision, for the audit log. Holds no secret or credential.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PushEvent {
+    /// The refs the push tried to update (empty if the commands could not be read).
     pub refs: Vec<String>,
+    /// Forwarded or refused, and why.
     pub decision: Decision,
     /// Request body bytes received.
     pub bytes: u64,
@@ -126,6 +130,7 @@ pub struct PushEvent {
 /// The proxy could not be built.
 #[derive(Debug, thiserror::Error)]
 pub enum ProxyError {
+    /// The HTTP client for the upstream could not be built.
     #[error("http client: {0}")]
     Client(#[from] reqwest::Error),
 }

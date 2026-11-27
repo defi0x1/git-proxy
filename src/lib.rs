@@ -12,6 +12,8 @@
 //!
 //! [`FakeUpstream`] serves bare repositories with `git http-backend`, for tests and demos.
 
+#![warn(missing_docs)]
+
 mod pack;
 pub mod pkt;
 mod policy;
