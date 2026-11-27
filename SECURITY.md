@@ -1,6 +1,6 @@
 # Security policy
 
-pushgate is a security boundary: a push it forwards is a push the client was meant to be able
+git-proxy is a security boundary: a push it forwards is a push the client was meant to be able
 to make. A push that gets past a check, a way to read the upstream token, or a small request that
 keeps the proxy busy or out of memory is a vulnerability.
 

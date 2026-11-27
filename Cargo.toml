@@ -1,11 +1,11 @@
 [package]
-name = "pushgate"
+name = "git-proxy"
 version = "0.1.0"
 description = "Git smart-HTTP proxy that lets a client push without a token: ref policy, pack scan, then forward."
 edition = "2024"
 rust-version = "1.85"
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/defi0x1/pushgate"
+repository = "https://github.com/defi0x1/git-proxy"
 readme = "README.md"
 keywords = ["git", "proxy", "github", "security", "agents"]
 categories = ["development-tools", "network-programming"]

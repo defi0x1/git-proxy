@@ -3,7 +3,7 @@
 //! each run bounded: no entry inflates past 64 KiB.
 //! Run from the repository root: cargo +nightly fuzz run scan_pack -- -max_total_time=60
 use libfuzzer_sys::fuzz_target;
-use pushgate::scan::{ScanLimits, check};
+use git_proxy::scan::{ScanLimits, check};
 
 fuzz_target!(|data: &[u8]| {
     let lim = ScanLimits {

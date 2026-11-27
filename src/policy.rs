@@ -5,7 +5,7 @@ use crate::pkt::PushRequest;
 /// What a client may push.
 ///
 /// ```
-/// let policy = pushgate::Policy::new(["refs/heads/agent/*"]);
+/// let policy = git_proxy::Policy::new(["refs/heads/agent/*"]);
 /// assert!(policy.ref_allowed("refs/heads/agent/fix-1"));
 /// assert!(!policy.ref_allowed("refs/heads/main"));
 /// assert_eq!(policy.deny_paths, [".github/workflows"]);

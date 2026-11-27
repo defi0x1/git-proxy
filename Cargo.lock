@@ -327,6 +327,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "git-proxy"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "base64 0.22.1",
+ "flate2",
+ "futures-util",
+ "proptest",
+ "reqwest",
+ "tempfile",
+ "thiserror",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
 name = "http"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -696,22 +712,6 @@ dependencies = [
  "rusty-fork",
  "tempfile",
  "unarray",
-]
-
-[[package]]
-name = "pushgate"
-version = "0.1.0"
-dependencies = [
- "axum",
- "base64 0.22.1",
- "flate2",
- "futures-util",
- "proptest",
- "reqwest",
- "tempfile",
- "thiserror",
- "tokio",
- "tracing",
 ]
 
 [[package]]

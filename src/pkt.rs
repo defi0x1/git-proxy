@@ -313,7 +313,7 @@ pub fn rejection(
     };
     let mut out = Vec::new();
     let mut msg = vec![2u8];
-    msg.extend_from_slice(format!("pushgate: push refused: {summary}\n").as_bytes());
+    msg.extend_from_slice(format!("git-proxy: push refused: {summary}\n").as_bytes());
     push_pkt(&mut out, &msg);
     for part in inner.chunks(chunk) {
         let mut p = Vec::with_capacity(part.len() + 1);

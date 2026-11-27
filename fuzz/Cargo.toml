@@ -1,5 +1,5 @@
 [package]
-name = "pushgate-fuzz"
+name = "git-proxy-fuzz"
 version = "0.0.0"
 edition = "2024"
 publish = false
@@ -12,7 +12,7 @@ cargo-fuzz = true
 
 [dependencies]
 libfuzzer-sys = "0.4"
-pushgate = { path = ".." }
+git-proxy = { path = ".." }
 
 [[bin]]
 name = "parse_push"

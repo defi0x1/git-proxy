@@ -8,7 +8,7 @@ use std::process::{Command, Output, Stdio};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
-use pushgate::{
+use git_proxy::{
     Binding, Credential, Decision, FakeUpstream, GitProxy, Limits, Policy, PushEvent, pkt,
 };
 

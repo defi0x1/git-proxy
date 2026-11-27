@@ -1,4 +1,4 @@
-//! Starts a fake upstream (`git http-backend` behind a token) and pushgate in front of it, then
+//! Starts a fake upstream (`git http-backend` behind a token) and git-proxy in front of it, then
 //! pushes through the proxy with plain `git`: one push the policy allows, two it refuses.
 //!
 //! Run: cargo run --example demo
@@ -7,7 +7,7 @@ use std::path::Path;
 use std::process::Command;
 use std::sync::Arc;
 
-use pushgate::{
+use git_proxy::{
     Binding, Credential, Decision, FakeUpstream, GitProxy, Limits, Policy, PushEvent,
     create_bare_repo,
 };
@@ -61,8 +61,8 @@ fn main() -> Result<(), Error> {
     let secret = "throwaway-secret";
     let resolve = Arc::new(move |s: &str| (s == secret).then(|| binding.clone()));
     let audit = Arc::new(|e: &PushEvent| match &e.decision {
-        Decision::Allowed => println!("  [pushgate] allowed {:?}", e.refs),
-        Decision::Refused(why) => println!("  [pushgate] refused {:?}: {why}", e.refs),
+        Decision::Allowed => println!("  [git-proxy] allowed {:?}", e.refs),
+        Decision::Refused(why) => println!("  [git-proxy] refused {:?}: {why}", e.refs),
     });
     std::fs::create_dir(dir.join("spool"))?;
     let proxy = GitProxy::new(resolve, audit, dir.join("spool"))?;

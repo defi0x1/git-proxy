@@ -1,16 +1,16 @@
-//! `pushgate`: run the proxy for one upstream repository.
+//! `git-proxy`: run the proxy for one upstream repository.
 
 use std::io::Read;
 use std::process::ExitCode;
 use std::sync::Arc;
 
-use pushgate::{Binding, Credential, Decision, GitProxy, Limits, Policy, PushEvent};
+use git_proxy::{Binding, Credential, Decision, GitProxy, Limits, Policy, PushEvent};
 
 const HELP: &str = "\
-pushgate: let a client push to a Git repository without holding its token.
+git-proxy: let a client push to a Git repository without holding its token.
 
 USAGE:
-    pushgate --upstream <URL> --allow-ref <PATTERN>... [OPTIONS]
+    git-proxy --upstream <URL> --allow-ref <PATTERN>... [OPTIONS]
 
 OPTIONS:
     --upstream <URL>       Repository to forward to, e.g. https://github.com/owner/repo.git
@@ -102,7 +102,7 @@ async fn run(args: Args) -> Result<(), String> {
         .map_err(|e| format!("listen on {}: {e}", args.listen))?;
     // The only thing the client gets: a URL holding the throwaway secret.
     println!("http://{}/git/{secret}/repo.git", args.listen);
-    eprintln!("pushgate: forwarding to {}", binding.upstream);
+    eprintln!("git-proxy: forwarding to {}", binding.upstream);
     let resolve = Arc::new(move |s: &str| (s == secret).then(|| binding.clone()));
     let tmp = tempfile::tempdir().map_err(|e| format!("temp dir: {e}"))?;
     let proxy = GitProxy::new(resolve, Arc::new(audit), tmp.path().to_path_buf())

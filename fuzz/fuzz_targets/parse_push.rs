@@ -3,7 +3,7 @@
 //! Run from the repository root: cargo +nightly fuzz run parse_push -- -max_total_time=60
 //! (or `RUSTC_BOOTSTRAP=1 cargo fuzz run ...` on stable when nightly is older than rust-version).
 use libfuzzer_sys::fuzz_target;
-use pushgate::pkt;
+use git_proxy::pkt;
 
 fuzz_target!(|data: &[u8]| {
     if let Ok(req) = pkt::parse_push(data) {
