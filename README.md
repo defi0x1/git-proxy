@@ -13,7 +13,7 @@ push, and forwards it to GitHub only if it passes.
 
 ## Quickstart
 
-Needs Rust and `git`.
+Needs Rust and `git`, on Linux or macOS.
 
 ```sh
 cargo install --git https://github.com/defi0x1/git-proxy
