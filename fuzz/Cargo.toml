@@ -1,0 +1,29 @@
+[package]
+name = "pushgate-fuzz"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[package.metadata]
+cargo-fuzz = true
+
+# Its own workspace, so the main crate builds without nightly.
+[workspace]
+
+[dependencies]
+libfuzzer-sys = "0.4"
+pushgate = { path = ".." }
+
+[[bin]]
+name = "parse_push"
+path = "fuzz_targets/parse_push.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "scan_pack"
+path = "fuzz_targets/scan_pack.rs"
+test = false
+doc = false
+bench = false
