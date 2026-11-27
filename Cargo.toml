@@ -1,0 +1,34 @@
+[package]
+name = "pushgate"
+version = "0.1.0"
+description = "Git smart-HTTP proxy that lets a client push without a token: ref policy, pack scan, then forward."
+edition = "2024"
+rust-version = "1.85"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/defi0x1/pushgate"
+readme = "README.md"
+keywords = ["git", "proxy", "github", "security", "agents"]
+categories = ["development-tools", "network-programming"]
+exclude = ["/fuzz", "/docs", "/.github"]
+
+[dependencies]
+axum = "0.8.9"
+base64 = "0.22"
+flate2 = "1.1"
+futures-util = { version = "0.3.31", default-features = false, features = ["std"] }
+reqwest = { version = "0.12", default-features = false, features = ["stream", "rustls-tls"] }
+tempfile = "3"
+thiserror = "2"
+tokio = { version = "1.45", features = ["rt-multi-thread", "macros", "net", "fs", "process", "io-util"] }
+tracing = "0.1"
+
+[dev-dependencies]
+proptest = "1"
+
+[lints.rust]
+unsafe_code = "deny"
+
+[lints.clippy]
+all = { level = "warn", priority = -1 }
+unwrap_used = "deny"
+expect_used = "deny"
