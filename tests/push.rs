@@ -782,6 +782,34 @@ fn allows_delete_and_tags_when_the_policy_says_so() {
     );
 }
 
+#[test]
+fn refuses_workflow_change_carried_by_an_annotated_tag() {
+    // The walk must go from the tag object to its commit, or the path check sees nothing.
+    let env = Env::new(|_, p| {
+        p.allow_tags = true;
+        p.allow_refs.push("refs/tags/*".into());
+    });
+    let w = env.client();
+    write(
+        &w,
+        ".github/workflows/ci.yml",
+        b"on: push\njobs: {changed: {}}\n",
+    );
+    commit(&w, "edit workflow");
+    ok(git(&w, &["tag", "-a", "v9", "-m", "release"]));
+    env.assert_refused(
+        &w,
+        &["push", "origin", "v9"],
+        "changes under .github/workflows are not allowed (.github/workflows/ci.yml)",
+    );
+    assert_eq!(env.upstream_ref("refs/tags/v9"), None);
+    // A clean annotated tag still goes through.
+    ok(git(&w, &["reset", "-q", "--hard", "origin/main"]));
+    ok(git(&w, &["tag", "-a", "v10", "-m", "clean release"]));
+    ok(git(&w, &["push", "-q", "origin", "v10"]));
+    assert!(env.upstream_ref("refs/tags/v10").is_some());
+}
+
 /// Overhead on a ~50 MB push: direct to upstream vs through the proxy.
 /// Run: cargo test --release --test push -- --ignored --nocapture overhead
 #[test]

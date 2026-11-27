@@ -316,7 +316,23 @@ pub(crate) fn inspect(
             found_old = true;
             continue;
         }
-        if objects.get(&c).is_none_or(|(t, _)| t != "commit") || !seen.insert(c.clone()) {
+        let kind = objects.get(&c).map(|(t, _)| t.as_str());
+        if !matches!(kind, Some("commit" | "tag")) || !seen.insert(c.clone()) {
+            continue;
+        }
+        if kind == Some("tag") {
+            // An annotated tag: check what it points at (the `object` line comes first).
+            let Some((_, data)) = odb.get(&c)? else {
+                return Err(InspectError::Internal(format!(
+                    "tag {} unreadable",
+                    short(&c)
+                )));
+            };
+            let text = String::from_utf8_lossy(&data);
+            let Some(target) = text.lines().next().and_then(|l| l.strip_prefix("object ")) else {
+                return refused(format!("tag {} has no object line first", short(&c)));
+            };
+            queue.push_back(target.to_string());
             continue;
         }
         let Some((_, data)) = odb.get(&c)? else {
