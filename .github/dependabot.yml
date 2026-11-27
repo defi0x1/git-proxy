@@ -8,3 +8,6 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    ignore:
+      # The toolchain versions are chosen by hand (stable, nightly, and the MSRV).
+      - dependency-name: dtolnay/rust-toolchain
