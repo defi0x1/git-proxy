@@ -24,6 +24,7 @@ OPTIONS:
     -h, --help             Print this help
 ";
 
+#[derive(Debug)]
 struct Args {
     upstream: String,
     policy: Policy,
@@ -75,6 +76,16 @@ fn random_secret() -> std::io::Result<String> {
     Ok(b.iter().map(|x| format!("{x:02x}")).collect())
 }
 
+/// Compares in time that depends only on the lengths, so the secret cannot be guessed byte by
+/// byte from response times.
+fn same(a: &str, b: &str) -> bool {
+    a.len() == b.len()
+        && a.bytes()
+            .zip(b.bytes())
+            .fold(0u8, |acc, (x, y)| acc | (x ^ y))
+            == 0
+}
+
 fn audit(e: &PushEvent) {
     let refs = e.refs.join(" ");
     match &e.decision {
@@ -103,7 +114,7 @@ async fn run(args: Args) -> Result<(), String> {
     // The only thing the client gets: a URL holding the throwaway secret.
     println!("http://{}/git/{secret}/repo.git", args.listen);
     eprintln!("git-proxy: forwarding to {}", binding.upstream);
-    let resolve = Arc::new(move |s: &str| (s == secret).then(|| binding.clone()));
+    let resolve = Arc::new(move |s: &str| same(s, &secret).then(|| binding.clone()));
     let tmp = tempfile::tempdir().map_err(|e| format!("temp dir: {e}"))?;
     let proxy = GitProxy::new(resolve, Arc::new(audit), tmp.path().to_path_buf())
         .map_err(|e| e.to_string())?;
@@ -131,5 +142,59 @@ async fn main() -> ExitCode {
             eprintln!("error: {e}");
             ExitCode::FAILURE
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn args(s: &str) -> Result<Args, String> {
+        parse(s.split_whitespace().map(String::from))
+    }
+
+    #[test]
+    fn parses_flags() {
+        let a = args(
+            "--upstream https://example.com/r.git --allow-ref refs/heads/a/* --allow-ref refs/tags/v* \
+             --deny-path secrets --allow-tags --listen 0.0.0.0:9000 --token-env T --secret-env S",
+        )
+        .unwrap();
+        assert_eq!(a.upstream, "https://example.com/r.git");
+        assert_eq!(a.policy.allow_refs, ["refs/heads/a/*", "refs/tags/v*"]);
+        assert_eq!(a.policy.deny_paths, [".github/workflows", "secrets"]);
+        assert!(a.policy.allow_tags && !a.policy.allow_deletes);
+        assert_eq!(
+            (a.listen.as_str(), a.token_env.as_str()),
+            ("0.0.0.0:9000", "T")
+        );
+        assert_eq!(a.secret_env.as_deref(), Some("S"));
+    }
+
+    #[test]
+    fn defaults_and_errors() {
+        let a = args("--upstream u --allow-ref r").unwrap();
+        assert_eq!(
+            (a.listen.as_str(), a.token_env.as_str()),
+            ("127.0.0.1:7777", "GH_TOKEN")
+        );
+        assert!(a.secret_env.is_none());
+        assert!(args("--allow-ref r").unwrap_err().contains("--upstream"));
+        assert!(args("--upstream u").unwrap_err().contains("--allow-ref"));
+        assert!(args("--upstream").unwrap_err().contains("needs a value"));
+        assert!(
+            args("--upstream u --allow-ref r --bogus")
+                .unwrap_err()
+                .contains("--bogus")
+        );
+        assert_eq!(args("-h").err().as_deref(), Some(""));
+    }
+
+    #[test]
+    fn compares_secrets() {
+        assert!(same("abc", "abc"));
+        assert!(!same("abc", "abd"));
+        assert!(!same("abc", "abcd"));
+        assert!(same("", ""));
     }
 }
