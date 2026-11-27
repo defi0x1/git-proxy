@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 400" width="960" height="400" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <title>pushgate sits between a Git client and GitHub</title>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#57606a"/>
+    </marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#cf222e"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="960" height="400" rx="16" fill="#ffffff" stroke="#d0d7de"/>
+
+  <!-- Client -->
+  <rect x="30" y="80" width="220" height="170" rx="12" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5"/>
+  <text x="140" y="114" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2328">Client</text>
+  <text x="140" y="140" text-anchor="middle" font-size="14" fill="#57606a">AI coding agent, CI job,</text>
+  <text x="140" y="158" text-anchor="middle" font-size="14" fill="#57606a">contractor</text>
+  <rect x="50" y="182" width="180" height="48" rx="8" fill="#fff8c5" stroke="#d4a72c"/>
+  <text x="140" y="202" text-anchor="middle" font-size="13" fill="#7d4e00">holds:</text>
+  <text x="140" y="221" text-anchor="middle" font-size="14" font-weight="700" fill="#7d4e00">throwaway secret</text>
+
+  <!-- pushgate -->
+  <rect x="340" y="30" width="280" height="340" rx="12" fill="#ddf4ff" stroke="#0969da" stroke-width="2"/>
+  <text x="480" y="66" text-anchor="middle" font-size="22" font-weight="700" fill="#0550ae">pushgate</text>
+  <rect x="365" y="84" width="230" height="48" rx="8" fill="#dafbe1" stroke="#1a7f37"/>
+  <text x="480" y="104" text-anchor="middle" font-size="13" fill="#116329">holds:</text>
+  <text x="480" y="123" text-anchor="middle" font-size="14" font-weight="700" fill="#116329">real token</text>
+  <text x="480" y="160" text-anchor="middle" font-size="13" font-weight="600" fill="#0550ae">every push, before forwarding:</text>
+  <g font-size="14" fill="#1f2328">
+    <rect x="365" y="172" width="230" height="40" rx="6" fill="#ffffff" stroke="#54aeff"/>
+    <text x="378" y="190" font-weight="700">1 ref policy</text>
+    <text x="378" y="205" font-size="12" fill="#57606a">allowed refs only; no tags, no deletes</text>
+    <rect x="365" y="218" width="230" height="40" rx="6" fill="#ffffff" stroke="#54aeff"/>
+    <text x="378" y="236" font-weight="700">2 fast-forward only</text>
+    <text x="378" y="251" font-size="12" fill="#57606a">no force push, no rewritten history</text>
+    <rect x="365" y="264" width="230" height="40" rx="6" fill="#ffffff" stroke="#54aeff"/>
+    <text x="378" y="282" font-weight="700">3 denied paths</text>
+    <text x="378" y="297" font-size="12" fill="#57606a">.github/workflows by default</text>
+    <rect x="365" y="310" width="230" height="40" rx="6" fill="#ffffff" stroke="#54aeff"/>
+    <text x="378" y="328" font-weight="700">4 size limits</text>
+    <text x="378" y="343" font-size="12" fill="#57606a">big files, big pushes, pack bombs</text>
+  </g>
+
+  <!-- GitHub -->
+  <rect x="710" y="80" width="220" height="170" rx="12" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5"/>
+  <text x="820" y="114" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2328">GitHub</text>
+  <text x="820" y="140" text-anchor="middle" font-size="14" fill="#57606a">(any smart-HTTP</text>
+  <text x="820" y="158" text-anchor="middle" font-size="14" fill="#57606a">Git server)</text>
+  <text x="820" y="206" text-anchor="middle" font-size="13" fill="#57606a">sees only pushes</text>
+  <text x="820" y="224" text-anchor="middle" font-size="13" fill="#57606a">that passed all 4</text>
+
+  <!-- Arrows: client to proxy -->
+  <line x1="252" y1="140" x2="336" y2="140" stroke="#57606a" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="294" y="130" text-anchor="middle" font-size="12" fill="#57606a">git push</text>
+  <!-- refusal back -->
+  <line x1="336" y1="200" x2="252" y2="200" stroke="#cf222e" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#arrow-red)"/>
+  <text x="294" y="222" text-anchor="middle" font-size="12" fill="#cf222e">refused,</text>
+  <text x="294" y="237" text-anchor="middle" font-size="12" fill="#cf222e">with a reason</text>
+
+  <!-- proxy to GitHub -->
+  <line x1="622" y1="140" x2="706" y2="140" stroke="#57606a" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="664" y="122" text-anchor="middle" font-size="12" fill="#57606a">same bytes</text>
+  <text x="664" y="160" text-anchor="middle" font-size="12" fill="#57606a">+ token</text>
+
+  <text x="140" y="300" text-anchor="middle" font-size="12" fill="#57606a">remote URL:</text>
+  <text x="140" y="318" text-anchor="middle" font-size="12" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#1f2328">http://proxy/git/&lt;secret&gt;/repo.git</text>
+  <text x="140" y="342" text-anchor="middle" font-size="12" fill="#57606a">leaked? it can fetch, and push</text>
+  <text x="140" y="358" text-anchor="middle" font-size="12" fill="#57606a">only what the policy allows</text>
+</svg>
